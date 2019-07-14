@@ -1,0 +1,10 @@
+USE Fantasy_Football
+
+SELECT * 
+INTO Ten_yr_tbl_bkup
+FROM dbo.Ten_yr_tbl
+;
+
+--Add field for points in a season
+ALTER TABLE dbo.10yr_tbl ADD Points As ((Pass_Yds * .04) + (Pass_TD * 4) + (Pass_Int * -1) + (Rush_Yds * .1) + (Rush_TD * 6) + (Rcv_Yds * .1) + (Rcv_TD * 6))
+;
