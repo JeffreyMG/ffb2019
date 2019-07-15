@@ -48,3 +48,10 @@ Or Fantasy_Pos_Rank Is Null
 Or Points Is Null
 ORDER BY Points DESC 
 ;
+
+--find records where there are duplicate Year-Name combinations 
+SELECT a.Year, a.Name, count(a.Name) AS Count_Nm
+FROM dbo.Ten_yr_tbl As a
+GROUP BY Year, Name
+ORDER BY Count_Nm DESC;
+
