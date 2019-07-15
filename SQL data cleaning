@@ -55,3 +55,11 @@ FROM dbo.Ten_yr_tbl As a
 GROUP BY Year, Name
 ORDER BY Count_Nm DESC;
 
+--there are multiple Year-Name duplicates, see if Year-Name-Team-FantPos is unique
+SELECT a.Year, a.Name, a.Team, a.FantPos, count(a.Name) AS Count_Nm
+FROM dbo.Ten_yr_tbl As a
+GROUP BY Year, Name, FantPos, Team
+ORDER BY Count_Nm DESC;
+--Year-Name-Team-FantPos is unique
+
+
