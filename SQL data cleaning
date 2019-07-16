@@ -62,4 +62,44 @@ GROUP BY Year, Name, FantPos, Team
 ORDER BY Count_Nm DESC;
 --Year-Name-Team-FantPos is unique
 
+--update all stats fields to 0 where player had 0 fantasy points
+UPDATE dbo.Ten_yr_tbl
+SET Games_Played = COALESCE(Games_Played, 0),
+    Games_Started = COALESCE(Games_Started, 0),
+	Pass_Cmp = COALESCE(Pass_Cmp, 0),
+	Pass_Att = COALESCE(Pass_Att, 0),
+	Pass_Yds = COALESCE(Pass_Yds, 0),
+	Pass_TD = COALESCE(Pass_TD, 0),
+	Pass_Int = COALESCE(Pass_Int, 0),
+	Rush_Att = COALESCE(Rush_Att, 0),
+	Rush_Yds = COALESCE(Rush_Yds, 0),
+	Rush_TD = COALESCE(Rush_TD, 0),
+	Rcv_Tgt = COALESCE(Rcv_Tgt, 0),
+	Rcv_Rec = COALESCE(Rcv_Rec, 0),
+	Rcv_Yds = COALESCE(Rcv_Yds, 0),
+	Rcv_TD = COALESCE(Rcv_TD, 0)
+WHERE Points = 0;
 
+--Find max rank, max rank is 286
+SELECT max(Fantasy_Pos_Rank) As 'Max'
+FROM dbo.Ten_yr_tbl
+
+--update Null ranks where points <= 0
+UPDATE dbo.Ten_yr_tbl
+SET Fantasy_Pos_Rank = COALESCE(Fantasy_Pos_Rank, 288)
+WHERE Points <= 0;
+
+--update remaining Null ranks
+UPDATE dbo.Ten_yr_tbl
+SET Fantasy_Pos_Rank = 287
+WHERE Points <= 5 AND Fantasy_Pos_Rank Is Null;
+
+--update Null positions to NA 
+UPDATE dbo.Ten_yr_tbl
+SET FantPos = 'NA'
+WHERE Points = 0 AND FantPos Is Null;
+
+--update Null Targets
+UPDATE dbo.Ten_yr_tbl
+SET Rcv_Tgt = Rcv_Rec
+WHERE Rcv_Tgt Is Null;
