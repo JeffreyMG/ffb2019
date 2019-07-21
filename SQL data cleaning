@@ -28,30 +28,30 @@ SELECT *
 FROM dbo.Ten_yr_tbl
 WHERE Year Is Null
 OR Name Is Null
-Or Team Is Null
-Or FantPos Is Null
-Or Age Is Null
-Or Games_Played Is Null
-Or Games_Started Is Null
-Or Pass_Cmp Is Null
-Or Pass_Att Is Null
-Or Pass_Yds Is Null
-Or Pass_Td Is Null
-Or Rush_Att Is Null
-Or Rush_TD Is Null
-Or Rush_Yds Is Null
-Or Rcv_Tgt Is Null
-Or Rcv_Rec Is Null
-Or Rcv_Yds Is Null
-Or Rcv_TD Is Null
-Or Fantasy_Pos_Rank Is Null
-Or Points Is Null
+OR Team Is Null
+OR FantPos Is Null
+OR Age Is Null
+OR Games_Played Is Null
+OR Games_Started Is Null
+OR Pass_Cmp Is Null
+OR Pass_Att Is Null
+OR Pass_Yds Is Null
+OR Pass_Td Is Null
+OR Rush_Att Is Null
+OR Rush_TD Is Null
+OR Rush_Yds Is Null
+OR Rcv_Tgt Is Null
+OR Rcv_Rec Is Null
+OR Rcv_Yds Is Null
+OR Rcv_TD Is Null
+OR Fantasy_Pos_Rank Is Null
+OR Points Is Null
 ORDER BY Points DESC 
 ;
 
 --find records where there are duplicate Year-Name combinations 
 SELECT a.Year, a.Name, count(a.Name) AS Count_Nm
-FROM dbo.Ten_yr_tbl As a
+FROM dbo.Ten_yr_tbl AS a
 GROUP BY Year, Name
 ORDER BY Count_Nm DESC;
 
@@ -62,6 +62,7 @@ GROUP BY Year, Name, FantPos, Team
 ORDER BY Count_Nm DESC;
 --Year-Name-Team-FantPos is unique
 
+--Start filling in Nulls
 --update all stats fields to 0 where player had 0 fantasy points
 UPDATE dbo.Ten_yr_tbl
 SET Games_Played = COALESCE(Games_Played, 0),
@@ -80,9 +81,10 @@ SET Games_Played = COALESCE(Games_Played, 0),
 	Rcv_TD = COALESCE(Rcv_TD, 0)
 WHERE Points = 0;
 
---Find max rank, max rank is 286
+--Find max rank
 SELECT max(Fantasy_Pos_Rank) As 'Max'
-FROM dbo.Ten_yr_tbl
+FROM dbo.Ten_yr_tbl;
+--max rank is 286
 
 --update Null ranks where points <= 0
 UPDATE dbo.Ten_yr_tbl
@@ -103,3 +105,25 @@ WHERE Points = 0 AND FantPos Is Null;
 UPDATE dbo.Ten_yr_tbl
 SET Rcv_Tgt = Rcv_Rec
 WHERE Rcv_Tgt Is Null;
+
+--create temp table with all players where age is null
+Select * INTO #tmp_no_age
+From dbo.Ten_yr_tbl
+Where Age Is Null;
+
+--check to see if there are other years of player/position with which age could be deduced
+Select a.*
+From dbo.Ten_yr_tbl AS a
+INNER JOIN #tmp_no_age AS b ON a.Name = b.Name AND a.FantPos = b.FantPos
+;
+--no other instances of these 3 players
+
+--find average age
+Select AVG(Cast(Age AS Float))
+From dbo.Ten_yr_tbl
+--average age is 26.25
+
+--update Null ages to average age, 26 as Age is only whole numbers
+Update dbo.Ten_yr_tbl
+SET Age = 26
+WHERE Age Is Null
