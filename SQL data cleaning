@@ -127,3 +127,69 @@ From dbo.Ten_yr_tbl
 Update dbo.Ten_yr_tbl
 SET Age = 26
 WHERE Age Is Null
+
+--create copy of Ten_yr_tbl
+SELECT * INTO #tmp
+FROM dbo.Ten_yr_tbl
+WHERE FantPos Is Not Null;
+
+--Update Null positions where player had a position in previous years
+UPDATE dbo.Ten_yr_tbl
+SET FantPos = a.FantPos
+FROM #tmp AS a
+WHERE ((dbo.Ten_yr_tbl.FantPos Is Null) AND (a.FantPos Is Not Null) AND ((dbo.Ten_yr_tbl.Year - 1)) = a.Year);
+
+--
+ALTER TABLE dbo.Ten_yr_tbl ADD Pts FLOAT;
+
+UPDATE dbo.Ten_yr_tbl SET Pts = ROUND(Points,2,1);
+
+UPDATE dbo.Ten_yr_tbl 
+SET Pts = 0
+WHERE Pts IS Null;
+
+
+--update all stats fields to 0 where player had 0 fantasy points, using new Pts column
+UPDATE dbo.Ten_yr_tbl
+SET Games_Played = COALESCE(Games_Played, 0),
+    Games_Started = COALESCE(Games_Started, 0),
+	Pass_Cmp = COALESCE(Pass_Cmp, 0),
+	Pass_Att = COALESCE(Pass_Att, 0),
+	Pass_Yds = COALESCE(Pass_Yds, 0),
+	Pass_TD = COALESCE(Pass_TD, 0),
+	Pass_Int = COALESCE(Pass_Int, 0),
+	Rush_Att = COALESCE(Rush_Att, 0),
+	Rush_Yds = COALESCE(Rush_Yds, 0),
+	Rush_TD = COALESCE(Rush_TD, 0),
+	Rcv_Tgt = COALESCE(Rcv_Tgt, 0),
+	Rcv_Rec = COALESCE(Rcv_Rec, 0),
+	Rcv_Yds = COALESCE(Rcv_Yds, 0),
+	Rcv_TD = COALESCE(Rcv_TD, 0)
+WHERE Pts = 0;
+
+
+--SELECT all records with any Null fields
+SELECT *
+FROM dbo.Ten_yr_tbl
+WHERE Year Is Null
+OR Name Is Null
+Or Team Is Null
+Or FantPos Is Null
+Or Age Is Null
+Or Games_Played Is Null
+Or Games_Started Is Null
+Or Pass_Cmp Is Null
+Or Pass_Att Is Null
+Or Pass_Yds Is Null
+Or Pass_Td Is Null
+Or Rush_Att Is Null
+Or Rush_TD Is Null
+Or Rush_Yds Is Null
+Or Rcv_Tgt Is Null
+Or Rcv_Rec Is Null
+Or Rcv_Yds Is Null
+Or Rcv_TD Is Null
+Or Fantasy_Pos_Rank Is Null
+Or Points Is Null
+ORDER BY Points DESC 
+--No Nulls remaining
