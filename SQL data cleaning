@@ -1,27 +1,28 @@
 USE Fantasy_Football
+GO
 
 SELECT * 
 INTO Ten_yr_tbl_bkup
 FROM dbo.Ten_yr_tbl
-;
+GO
 
 --Add field for points in a season
 ALTER TABLE dbo.Ten_yr_tbl ADD Points As ((Pass_Yds * .04) + (Pass_TD * 4) + (Pass_Int * -1) + (Rush_Yds * .1) + (Rush_TD * 6) + (Rcv_Yds * .1) + (Rcv_TD * 6))
-;
+GO
 
 --check if any high ranking players have Null at FantPos (position)
 SELECT *
 FROM dbo.Ten_yr_tbl
 WHERE FantPos IS Null
 ORDER BY Points DESC
-;
+GO
 
 --player Chad Johnson has Null FantPos, change FantPos to 'WR'
 UPDATE dbo.Ten_yr_tbl
 SET FantPos = 'WR'
 WHERE FantPos IS Null
 AND Name = 'Chad Johnson'
-;
+GO
 
 --SELECT all records with any Null fields
 SELECT *
@@ -47,13 +48,14 @@ OR Rcv_TD Is Null
 OR Fantasy_Pos_Rank Is Null
 OR Points Is Null
 ORDER BY Points DESC 
-;
+GO
 
 --find records where there are duplicate Year-Name combinations 
 SELECT a.Year, a.Name, count(a.Name) AS Count_Nm
 FROM dbo.Ten_yr_tbl AS a
 GROUP BY Year, Name
-ORDER BY Count_Nm DESC;
+ORDER BY Count_Nm DESC
+GO
 
 --there are multiple Year-Name duplicates, see if Year-Name-Team-FantPos is unique
 SELECT a.Year, a.Name, a.Team, a.FantPos, count(a.Name) AS Count_Nm
@@ -61,6 +63,7 @@ FROM dbo.Ten_yr_tbl As a
 GROUP BY Year, Name, FantPos, Team
 ORDER BY Count_Nm DESC;
 --Year-Name-Team-FantPos is unique
+GO
 
 --Start filling in Nulls
 --update all stats fields to 0 where player had 0 fantasy points
@@ -79,74 +82,88 @@ SET Games_Played = COALESCE(Games_Played, 0),
 	Rcv_Rec = COALESCE(Rcv_Rec, 0),
 	Rcv_Yds = COALESCE(Rcv_Yds, 0),
 	Rcv_TD = COALESCE(Rcv_TD, 0)
-WHERE Points = 0;
+WHERE Points = 0
+GO
 
 --Find max rank
 SELECT max(Fantasy_Pos_Rank) As 'Max'
-FROM dbo.Ten_yr_tbl;
+FROM dbo.Ten_yr_tbl
 --max rank is 286
+GO
 
 --update Null ranks where points <= 0
 UPDATE dbo.Ten_yr_tbl
 SET Fantasy_Pos_Rank = COALESCE(Fantasy_Pos_Rank, 288)
-WHERE Points <= 0;
+WHERE Points <= 0
+GO
 
 --update remaining Null ranks
 UPDATE dbo.Ten_yr_tbl
 SET Fantasy_Pos_Rank = 287
-WHERE Points <= 5 AND Fantasy_Pos_Rank Is Null;
+WHERE Points <= 5 AND Fantasy_Pos_Rank Is Null
+GO
 
 --update Null positions to NA 
 UPDATE dbo.Ten_yr_tbl
 SET FantPos = 'NA'
-WHERE Points = 0 AND FantPos Is Null;
+WHERE Points = 0 AND FantPos Is Null
+GO
 
 --update Null Targets
 UPDATE dbo.Ten_yr_tbl
 SET Rcv_Tgt = Rcv_Rec
-WHERE Rcv_Tgt Is Null;
+WHERE Rcv_Tgt Is Null
+GO
 
 --create temp table with all players where age is null
 Select * INTO #tmp_no_age
 From dbo.Ten_yr_tbl
-Where Age Is Null;
+Where Age Is Null
+GO
 
 --check to see if there are other years of player/position with which age could be deduced
 Select a.*
 From dbo.Ten_yr_tbl AS a
 INNER JOIN #tmp_no_age AS b ON a.Name = b.Name AND a.FantPos = b.FantPos
-;
+GO
 --no other instances of these 3 players
 
 --find average age
 Select AVG(Cast(Age AS Float))
 From dbo.Ten_yr_tbl
+GO
 --average age is 26.25
 
 --update Null ages to average age, 26 as Age is only whole numbers
 Update dbo.Ten_yr_tbl
 SET Age = 26
 WHERE Age Is Null
+GO
 
 --create copy of Ten_yr_tbl
 SELECT * INTO #tmp
 FROM dbo.Ten_yr_tbl
-WHERE FantPos Is Not Null;
+WHERE FantPos Is Not Null
+GO
 
 --Update Null positions where player had a position in previous years
 UPDATE dbo.Ten_yr_tbl
 SET FantPos = a.FantPos
 FROM #tmp AS a
-WHERE ((dbo.Ten_yr_tbl.FantPos Is Null) AND (a.FantPos Is Not Null) AND ((dbo.Ten_yr_tbl.Year - 1)) = a.Year);
+WHERE ((dbo.Ten_yr_tbl.FantPos Is Null) AND (a.FantPos Is Not Null) AND ((dbo.Ten_yr_tbl.Year - 1)) = a.Year)
+GO
 
 --
-ALTER TABLE dbo.Ten_yr_tbl ADD Pts FLOAT;
+ALTER TABLE dbo.Ten_yr_tbl ADD Pts FLOAT
+GO
 
-UPDATE dbo.Ten_yr_tbl SET Pts = ROUND(Points,2,1);
+UPDATE dbo.Ten_yr_tbl SET Pts = ROUND(Points,2,1)
+GO
 
 UPDATE dbo.Ten_yr_tbl 
 SET Pts = 0
-WHERE Pts IS Null;
+WHERE Pts IS Null
+GO
 
 
 --update all stats fields to 0 where player had 0 fantasy points, using new Pts column
@@ -165,7 +182,8 @@ SET Games_Played = COALESCE(Games_Played, 0),
 	Rcv_Rec = COALESCE(Rcv_Rec, 0),
 	Rcv_Yds = COALESCE(Rcv_Yds, 0),
 	Rcv_TD = COALESCE(Rcv_TD, 0)
-WHERE Pts = 0;
+WHERE Pts = 0
+GO
 
 
 --SELECT all records with any Null fields
@@ -193,3 +211,4 @@ Or Fantasy_Pos_Rank Is Null
 Or Points Is Null
 ORDER BY Points DESC 
 --No Nulls remaining
+GO
