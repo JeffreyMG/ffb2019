@@ -211,4 +211,10 @@ Or Fantasy_Pos_Rank Is Null
 Or Points Is Null
 ORDER BY Points DESC 
 --No Nulls remaining
+
+--final table to start feature building from
+GO
+SELECT * 
+INTO Ten_yr_tbl
+FROM dbo.10yr
 GO
