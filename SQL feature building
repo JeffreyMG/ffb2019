@@ -1,0 +1,7 @@
+USE Fantasy_Football
+GO
+
+SELECT * 
+INTO Ten_yr
+FROM dbo.Ten_yr_tbl
+GO
