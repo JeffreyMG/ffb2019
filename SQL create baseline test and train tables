@@ -1,0 +1,49 @@
+USE Fantasy_Football
+
+SELECT * INTO #tmpWR
+FROM Ten_yr
+WHERE FantPos = 'WR'
+
+SELECT Year, SUM(Pts) AS SumPts INTO #tmpYrPts
+FROM #tmpWR
+GROUP BY Year
+
+SELECT a.*, b.SumPts AS SumPts INTO #tmpWR2
+FROM #tmpWR AS a
+INNER JOIN #tmpYrPts AS b
+On a.Year = b.Year
+
+ALTER TABLE #tmpWR2 ADD NPts AS (Pts / SumPts)
+
+SELECT *
+FROM #tmpWR2
+
+SELECT Year, MAX(NPts) AS MNPts INTO #tmpMaxN
+FROM #tmpWR2
+GROUP BY Year
+
+SELECT a.*, b.MNPts AS MNPts INTO #tmpWR3
+FROM #tmpWR2 AS a
+INNER JOIN #tmpMAxN AS b
+On a.Year = b.Year
+
+ALTER TABLE #tmpWR3 ADD Norm_Pts AS (NPts / MNPts)
+
+SELECT Year, Name, Team, FantPos, Age, Norm_Pts AS Pts INTO #tmpFormat
+FROM #tmpWR3
+
+SELECT * FROM #tmpWR3
+
+SELECT a.*, b.Games_PLayed, b.Games_Started, b.Rush_Att, b.Rush_Yds, b.Rush_TD, b.Rcv_Tgt, b.Rcv_Rec, b.Rcv_Yds, b.Rcv_TD INTO #tmpFormat2
+FROM #tmpFormat AS a, #tmpWR3 AS b
+WHERE (a.Year = (b.Year + 1)) AND (a.Name = b.Name)
+
+SELECT * FROM #tmpFormat2
+
+SELECT Age, Pts, Games_Played, Games_Started, Rush_Att, Rush_Yds, Rush_TD, Rcv_Tgt, Rcv_Rec, Rcv_Yds, Rcv_TD INTO BaseTrain
+FROM #tmpFormat2
+WHERE Year <> 2018 AND Year <> 2010
+
+SELECT Year, Name, Team, FantPos, Age, Games_Played, Games_Started, Rush_Att, Rush_Yds, Rush_TD, Rcv_Tgt, Rcv_Rec, Rcv_Yds, Rcv_TD INTO BaseTest
+FROM #tmpFormat2
+WHERE Year = 2018 OR Year = 2010
