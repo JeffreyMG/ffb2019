@@ -44,6 +44,6 @@ SELECT Age, Pts, Games_Played, Games_Started, Rush_Att, Rush_Yds, Rush_TD, Rcv_T
 FROM #tmpFormat2
 WHERE Year <> 2018 AND Year <> 2010
 
-SELECT Year, Name, Team, FantPos, Age, Games_Played, Games_Started, Rush_Att, Rush_Yds, Rush_TD, Rcv_Tgt, Rcv_Rec, Rcv_Yds, Rcv_TD INTO BaseTest
+SELECT Year, Name, Team, FantPos, Age, Pts, Games_Played, Games_Started, Rush_Att, Rush_Yds, Rush_TD, Rcv_Tgt, Rcv_Rec, Rcv_Yds, Rcv_TD INTO BaseTest
 FROM #tmpFormat2
 WHERE Year = 2018 OR Year = 2010
