@@ -34,7 +34,7 @@ FROM #tmpWR3
 
 SELECT * FROM #tmpWR3
 
-SELECT a.*, b.Games_PLayed, b.Games_Started, b.Rush_Att, b.Rush_Yds, b.Rush_TD, b.Rcv_Tgt, b.Rcv_Rec, b.Rcv_Yds, b.Rcv_TD INTO #tmpFormat2
+SELECT a.*, b.Games_PLayed, b.Games_Started, b.Rush_Att, b.Rush_Yds, b.Rush_TD, b.Rcv_Tgt, b.Rcv_Rec, b.Rcv_Yds, b.Rcv_TD b.Pts AS PrevPts INTO #tmpFormat2
 FROM #tmpFormat AS a, #tmpWR3 AS b
 WHERE (a.Year = (b.Year + 1)) AND (a.Name = b.Name)
 
