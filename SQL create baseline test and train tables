@@ -34,16 +34,16 @@ FROM #tmpWR3
 
 SELECT * FROM #tmpWR3
 
-SELECT a.*, b.Games_PLayed, b.Games_Started, b.Rush_Att, b.Rush_Yds, b.Rush_TD, b.Rcv_Tgt, b.Rcv_Rec, b.Rcv_Yds, b.Rcv_TD b.Pts AS PrevPts INTO #tmpFormat2
+SELECT a.*, b.Pts AS PrevPts, b.Games_PLayed, b.Games_Started, b.Rush_Att, b.Rush_Yds, b.Rush_TD, b.Rcv_Tgt, b.Rcv_Rec, b.Rcv_Yds, b.Rcv_TD b.Pts AS PrevPts INTO #tmpFormat2
 FROM #tmpFormat AS a, #tmpWR3 AS b
 WHERE (a.Year = (b.Year + 1)) AND (a.Name = b.Name)
 
 SELECT * FROM #tmpFormat2
 
-SELECT Age, Pts, Games_Played, Games_Started, Rush_Att, Rush_Yds, Rush_TD, Rcv_Tgt, Rcv_Rec, Rcv_Yds, Rcv_TD INTO BaseTrain
+SELECT Age, Pts, Team, Games_Played, Games_Started, Rush_Att, Rush_Yds, Rush_TD, Rcv_Tgt, Rcv_Rec, Rcv_Yds, Rcv_TD, PrevPts INTO BaseTrain
 FROM #tmpFormat2
 WHERE Year <> 2018 AND Year <> 2010
 
-SELECT Year, Name, Team, FantPos, Age, Pts, Games_Played, Games_Started, Rush_Att, Rush_Yds, Rush_TD, Rcv_Tgt, Rcv_Rec, Rcv_Yds, Rcv_TD INTO BaseTest
+SELECT Year, Name, Team, FantPos, Age, Pts, Games_Played, Games_Started, Rush_Att, Rush_Yds, Rush_TD, Rcv_Tgt, Rcv_Rec, Rcv_Yds, Rcv_TD, PrevPts INTO BaseTest
 FROM #tmpFormat2
 WHERE Year = 2018 OR Year = 2010
