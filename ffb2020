@@ -1,0 +1,57 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Oct 14 21:17:55 2019
+
+@author: Jeff
+"""
+
+import numpy as np
+import pandas as pd
+
+csv_path = 'C:/Users/Jeff/Downloads/data_v2/yearly/'
+
+ffb_tbl = pd.read_csv(csv_path+'2000.csv')
+
+ffb_tbl['Year'] = 2000
+ 
+for i in range (2001,2020):
+    tmp_tbl = pd.read_csv(csv_path+str(i)+'.csv')
+    tmp_tbl['Year'] = i
+    ffb_tbl = pd.concat([ffb_tbl,tmp_tbl])
+
+del ffb_tbl['Att']
+del ffb_tbl['Yds']
+del ffb_tbl['Att.1']
+del ffb_tbl['Yds.1']
+del ffb_tbl['Yds.2']
+
+ffb_tbl['DOB'] = ffb_tbl['Year'] - ffb_tbl['Age']
+ffb_tbl['Pts'] = ((ffb_tbl['PassingYds'] * .04) + (ffb_tbl['PassingTD'] * 4) + (ffb_tbl['Int'] * -1) + (ffb_tbl['RushingYds'] * .1) + (ffb_tbl['RushingTD'] * 6) + (ffb_tbl['ReceivingYds'] * .1) + (ffb_tbl['ReceivingTD'] * 6))
+ffb_tbl['.5 Pts'] = ((ffb_tbl['PassingYds'] * .04) + (ffb_tbl['PassingTD'] * 4) + (ffb_tbl['Int'] * -1) + (ffb_tbl['RushingYds'] * .1) + (ffb_tbl['RushingTD'] * 6) + (ffb_tbl['ReceivingYds'] * .1) + (ffb_tbl['ReceivingTD'] * 6) + (ffb_tbl['Rec'] * .5))
+
+
+pp_test = ffb_tbl[['Player','DOB','Year']].groupby(['Player','DOB','Year']).size()
+
+delete chris givens, buddy howell
+
+index = name+DOB
+
+for row in fbb.tbl.rows:
+    ffb_tbl['Tgt Pts'] = 
+    ffb_tbl['Tgt .5 Pts'] = 
+
+#ffb_tbl['.5 pts'] = 
+#ffb_tbl['0 pts'] = ffb_tbl['.5 pts']
+#
+#
+#df["Yr Pos Rank"] = df.groupby("group_ID",)["value"].rank("dense", ascending=False)
+#
+    
+year rank
+prev yr rank
+prev yr pts
+% total team points year
+% total team pos points year
+QB pts
+QB td:int ratio
+RB YPC
